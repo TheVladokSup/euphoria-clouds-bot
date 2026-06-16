@@ -16,6 +16,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.exceptions import TelegramBadRequest
+from aiohttp import web
 
 # ==========================================
 # НАСТРОЙКИ
@@ -2027,7 +2028,25 @@ async def cart_reminder_loop():
 # ==========================================
 # ЗАПУСК БОТА
 # ==========================================
+async def health_handler(request):
+    return web.Response(text="OK", status=200)
+
+
+async def run_health_server():
+    app = web.Application()
+    app.router.add_get("/", health_handler)
+    app.router.add_get("/health", health_handler)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", 8000)
+    await site.start()
+    logging.info("Health check server running on 0.0.0.0:8000")
+
+
 async def main():
+    # Start health check HTTP server
+    await run_health_server()
+
     # Защищаем задачу от сборщика мусора, добавляя её в active_tasks
     reminder_task = asyncio.create_task(cart_reminder_loop())
     active_tasks.add(reminder_task)
