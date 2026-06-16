@@ -1,0 +1,6 @@
+aiogram==3.13.0
+aiofiles==24.1.0
+python-dotenv==1.0.1
+pydantic==2.8.2
+pydantic-core==2.20.1 --no-deps
+aiohttp==3.10.11
